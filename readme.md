@@ -79,7 +79,7 @@ make
 ```
 
 ## 压力测试
-![image-webbench](https://github.com/markparticle/WebServer/blob/master/readme.assest/%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95.png)
+![image-webbench]
 ```bash
 ./webbench-1.5/webbench -c 100 -t 10 http://ip:port/
 ./webbench-1.5/webbench -c 1000 -t 10 http://ip:port/

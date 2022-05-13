@@ -1,9 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-19
- * @copyleft Apache 2.0
- */
-
 #include "epoller.h"
 
 Epoller::Epoller(int maxEvent):epollFd_(epoll_create(512)), events_(maxEvent){
