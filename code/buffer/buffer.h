@@ -12,18 +12,18 @@ public:
     Buffer(int initBuffSize = 1024);
     ~Buffer() = default;
 
-    size_t WritableBytes() const;       
-    size_t ReadableBytes() const ;
-    size_t PrependableBytes() const;
+    size_t WritableBytes() const;      //可写 
+    size_t ReadableBytes() const ;     //可读
+    size_t PrependableBytes() const;   //预计
 
-    const char* Peek() const;
-    void EnsureWriteable(size_t len);
-    void HasWritten(size_t len);
+    const char* Peek() const;           //查看
+    void EnsureWriteable(size_t len);   //确保可写
+    void HasWritten(size_t len);        //已经写了
 
-    void Retrieve(size_t len);
-    void RetrieveUntil(const char* end);
+    void Retrieve(size_t len);          //找回
+    void RetrieveUntil(const char* end); //恢复到为止
 
-    void RetrieveAll() ;
+    void RetrieveAll() ;   //全部恢复
     std::string RetrieveAllToStr();
 
     const char* BeginWriteConst() const;

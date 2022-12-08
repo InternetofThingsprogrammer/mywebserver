@@ -1,8 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-27
- * @copyleft Apache 2.0
- */ 
 #include "httpresponse.h"
 
 using namespace std;
@@ -68,18 +63,18 @@ void HttpResponse::Init(const string& srcDir, string& path, bool isKeepAlive, in
 void HttpResponse::MakeResponse(Buffer& buff) {
     /* 判断请求的资源文件 */
     if(stat((srcDir_ + path_).data(), &mmFileStat_) < 0 || S_ISDIR(mmFileStat_.st_mode)) {
-        code_ = 404;
+        code_ = 404;    //请求不存在，服务器上找不到请求的资源
     }
     else if(!(mmFileStat_.st_mode & S_IROTH)) {
-        code_ = 403;
+        code_ = 403;   //请求被服务器拒绝
     }
     else if(code_ == -1) { 
         code_ = 200; 
     }
     ErrorHtml_();
-    AddStateLine_(buff);
-    AddHeader_(buff);
-    AddContent_(buff);
+    AddStateLine_(buff);   // 状态行
+    AddHeader_(buff);      // 消息头
+    AddContent_(buff);     // 消息体
 }
 
 char* HttpResponse::File() {

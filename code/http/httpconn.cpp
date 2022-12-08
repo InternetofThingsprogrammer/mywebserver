@@ -1,8 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-15
- * @copyleft Apache 2.0
- */ 
 #include "httpconn.h"
 using namespace std;
 
@@ -22,8 +17,8 @@ HttpConn::~HttpConn() {
 
 void HttpConn::init(int fd, const sockaddr_in& addr) {
     assert(fd > 0);
-    userCount++;
-    addr_ = addr;
+    userCount++;   //
+    addr_ = addr; 
     fd_ = fd;
     writeBuff_.RetrieveAll();
     readBuff_.RetrieveAll();

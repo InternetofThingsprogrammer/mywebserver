@@ -17,8 +17,8 @@ WebServer::WebServer(
     HttpConn::srcDir = srcDir_;
     SqlConnPool::Instance()->Init("localhost", sqlPort, sqlUser, sqlPwd, dbName, connPoolNum);
 
-    InitEventMode_(trigMode);
-    if(!InitSocket_()) { isClose_ = true;}
+    InitEventMode_(trigMode);  // 设置触发模式
+    if(!InitSocket_()) { isClose_ = true;}   // 初始化socket
 
     if(openLog) {
         Log::Instance()->init(logLevel, "./log", ".log", logQueSize);
@@ -51,7 +51,7 @@ void WebServer::InitEventMode_(int trigMode) {
     case 0:
         break;
     case 1:
-        connEvent_ |= EPOLLET;
+        connEvent_ |= EPOLLET;   
         break;
     case 2:
         listenEvent_ |= EPOLLET;
@@ -72,26 +72,26 @@ void WebServer::Start() {
     int timeMS = -1;  /* epoll wait timeout == -1 无事件将阻塞 */
     if(!isClose_) { LOG_INFO("========== Server start =========="); }
     while(!isClose_) {
-        if(timeoutMS_ > 0) {
-            timeMS = timer_->GetNextTick();
+        if(timeoutMS_ > 0) {    // 超时时间大于0
+            timeMS = timer_->GetNextTick();     // -1：定时器为空阻塞; 0: 定时器的最小结点已经超时(当前的时间大于定时器的最小超时时间; timeMS: 定时器最小结点距离当前还剩多少秒)
         }
-        int eventCnt = epoller_->Wait(timeMS);
+        int eventCnt = epoller_->Wait(timeMS); //-1：出错; 0: 时间到时; >0:就绪的文件描述符的个数
         for(int i = 0; i < eventCnt; i++) {
             /* 处理事件 */
-            int fd = epoller_->GetEventFd(i);
+            int fd = epoller_->GetEventFd(i);   
             uint32_t events = epoller_->GetEvents(i);
-            if(fd == listenFd_) {
+            if(fd == listenFd_) {                //  处理新到的客户端连接
                 DealListen_();
             }
-            else if(events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)) {
+            else if(events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)) {    // 异常事件: 客户端关闭连接，移除对应的定时器, fd错误, fd挂断
                 assert(users_.count(fd) > 0);
                 CloseConn_(&users_[fd]);
             }
-            else if(events & EPOLLIN) {
+            else if(events & EPOLLIN) {          //读事件
                 assert(users_.count(fd) > 0);
                 DealRead_(&users_[fd]);
             }
-            else if(events & EPOLLOUT) {
+            else if(events & EPOLLOUT) {       //写事件
                 assert(users_.count(fd) > 0);
                 DealWrite_(&users_[fd]);
             } else {
@@ -119,16 +119,16 @@ void WebServer::CloseConn_(HttpConn* client) {
 
 void WebServer::AddClient_(int fd, sockaddr_in addr) {
     assert(fd > 0);
-    users_[fd].init(fd, addr);
+    users_[fd].init(fd, addr);  //清空读写buffer
     if(timeoutMS_ > 0) {
         timer_->add(fd, timeoutMS_, std::bind(&WebServer::CloseConn_, this, &users_[fd]));
     }
     epoller_->AddFd(fd, EPOLLIN | connEvent_);
-    SetFdNonblock(fd);
+    SetFdNonblock(fd);     // 设置非阻塞
     LOG_INFO("Client[%d] in!", users_[fd].GetFd());
 }
 
-void WebServer::DealListen_() {
+void WebServer::DealListen_() {           // ET
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
     do {
@@ -143,7 +143,7 @@ void WebServer::DealListen_() {
     } while(listenEvent_ & EPOLLET);
 }
 
-void WebServer::DealRead_(HttpConn* client) {
+void WebServer::DealRead_(HttpConn* client) {    // 同步
     assert(client);
     ExtentTime_(client);
     threadpool_->AddTask(std::bind(&WebServer::OnRead_, this, client));
@@ -172,7 +172,7 @@ void WebServer::OnRead_(HttpConn* client) {
     OnProcess(client);
 }
 
-void WebServer::OnProcess(HttpConn* client) {
+void WebServer:: OnProcess(HttpConn* client) {
     if(client->process()) {
         epoller_->ModFd(client->GetFd(), connEvent_ | EPOLLOUT);
     } else {

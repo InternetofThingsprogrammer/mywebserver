@@ -74,12 +74,12 @@ void BlockDeque<T>::Close() {
     }
     condProducer_.notify_all();
     condConsumer_.notify_all();
-};
+}
 
 template<class T>
 void BlockDeque<T>::flush() {
     condConsumer_.notify_one();
-};
+}
 
 template<class T>
 void BlockDeque<T>::clear() {

@@ -1,18 +1,13 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-17
- * @copyleft Apache 2.0
- */ 
 #include "heaptimer.h"
 
 void HeapTimer::siftup_(size_t i) {
     assert(i >= 0 && i < heap_.size());
-    size_t j = (i - 1) / 2;
+    size_t j = (i - 1) / 2;   ///?
     while(j >= 0) {
         if(heap_[j] < heap_[i]) { break; }
         SwapNode_(i, j);
         i = j;
-        j = (i - 1) / 2;
+        j = (i - 1) / 2; 
     }
 }
 
@@ -122,10 +117,10 @@ void HeapTimer::clear() {
 }
 
 int HeapTimer::GetNextTick() {
-    tick();
+    tick();    //请空超时任务
     size_t res = -1;
     if(!heap_.empty()) {
-        res = std::chrono::duration_cast<MS>(heap_.front().expires - Clock::now()).count();
+        res = std::chrono::duration_cast<MS>(heap_.front().expires - Clock::now()).count();   // 超时时间res ms
         if(res < 0) { res = 0; }
     }
     return res;

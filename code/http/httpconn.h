@@ -1,9 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-15
- * @copyleft Apache 2.0
- */ 
-
 #ifndef HTTP_CONN_H
 #define HTTP_CONN_H
 
@@ -51,25 +45,25 @@ public:
         return request_.IsKeepAlive();
     }
 
-    static bool isET;
-    static const char* srcDir;
-    static std::atomic<int> userCount;
+    static bool isET;    // 触发模式
+    static const char* srcDir;     //  文件目录
+    static std::atomic<int> userCount;   // 用户数量
     
 private:
    
-    int fd_;
-    struct  sockaddr_in addr_;
+    int fd_;    // 文件描述符
+    struct  sockaddr_in addr_;   // 网络协议
 
-    bool isClose_;
+    bool isClose_;   // 连接状态
     
-    int iovCnt_;
+    int iovCnt_;              // io向量
     struct iovec iov_[2];
     
     Buffer readBuff_; // 读缓冲区
     Buffer writeBuff_; // 写缓冲区
 
-    HttpRequest request_;
-    HttpResponse response_;
+    HttpRequest request_;   // 请求
+    HttpResponse response_; // 响应
 };
 
 

@@ -1,8 +1,3 @@
-/*
- * @Author       : mark
- * @Date         : 2020-06-17
- * @copyleft Apache 2.0
- */ 
 #ifndef HEAP_TIMER_H
 #define HEAP_TIMER_H
 
@@ -22,10 +17,10 @@ typedef std::chrono::milliseconds MS;
 typedef Clock::time_point TimeStamp;
 
 struct TimerNode {
-    int id;
-    TimeStamp expires;
-    TimeoutCallBack cb;
-    bool operator<(const TimerNode& t) {
+    int id;               //
+    TimeStamp expires;    //超时时间
+    TimeoutCallBack cb;   //回调函数
+    bool operator<(const TimerNode& t) {  //比较运算符
         return expires < t.expires;
     }
 };
@@ -48,6 +43,19 @@ public:
     void pop();
 
     int GetNextTick();
+
+    auto get(){
+        return heap_;
+    }
+
+    int getMS(){
+    size_t res;
+    if(!heap_.empty()) {
+        res = std::chrono::duration_cast<MS>(heap_.front().expires - Clock::now()).count();
+        std::cout << "id :" << heap_.front().id << std::endl;
+    }
+    return res;
+}
 
 private:
     void del_(size_t i);
